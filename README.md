@@ -1,1 +1,7 @@
-a
+## Client/server protocol
+
+TritonHTTP is a client-server protocol that is layered on top of the reliable stream-oriented transport protocol TCP. Clients issue request messages to the server, and servers reply with response messages. In its most basic form, a single TritonHTTP-level request-reply exchange happens over a single, dedicated TCP connection. The client first connects to the server, sends the TritonHTTP request message, the server replies with an TritonHTTP response, and then the server closes the connection:
+
+![image](https://cseweb.ucsd.edu/~gmporter/classes/fa18/cse224/photos/singlerequest.png)
+
+Repeatedly setting up and tearing down TCP connections reduces overall network throughput and efficiency, and so TritonHTTP has a mechanism whereby a client can reuse a TCP connection to a given server. The idea is that the client opens a TCP connection to the server, issues an TritonHTTP request, gets a TritonHTTP reply, and then issues another TritonHTTP request on the already open outbound part of the connection. The server replies with the response, and this can continue through multiple request-reply interactions. The client signals the last request by setting a “Connection: close” header, described below. The server indicates that it will not handle additional requests by setting the “Connection: close” header in the response. Note that the client can issue more than one TritonHTTP request without necessarily waiting for full HTTP replies to be returned.
